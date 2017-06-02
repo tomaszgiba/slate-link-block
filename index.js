@@ -12,8 +12,7 @@ app.use(express.static('./client/dist/'));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const apiRoutes = require('./server/routes/api');
-// app.get('/api/targets', apiRoutes.targets);
-
+app.get('/api/discover_link', apiRoutes.discoverLink);
 
 app.get('*', function (request, response){
   response.sendFile(path.resolve(__dirname, 'server', 'static', 'index.html'))
