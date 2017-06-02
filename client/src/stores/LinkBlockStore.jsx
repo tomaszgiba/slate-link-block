@@ -32,6 +32,8 @@ class SlateStore {
   }
 
   discoverLink(link) {
+    if(link === undefined) throw Error('Undefined link');
+    if(this.getLink(link)) return;
     this.links.push(new DiscoveredLink(link));
   }
 }

@@ -1,23 +1,17 @@
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
 
-@observer class LinkBlock extends Component {
-
-  componentWillMount() {
-    this.props.store.discoverLink(this.props.url);
-  }
+class LinkBlock extends Component {
 
   render() {
-    const store = this.props.store;
-    const dl = store.getLink(this.props.url);
+    const link = this.props.link;
 
     return (
-      dl.meta ?
-        <div>
-          <img src={dl.meta.data.ogImage.url} width="50" />
-          <b>{dl.meta.data.ogTitle}</b><br/>
-          <i>{dl.meta.data.ogDescription}</i>
-        </div> : <a href={this.props.url}>{this.props.url}</a>);
+      <a href={this.props.href}>
+        <img src={link.meta.data.ogImage.url} width="50" />
+        <b>{link.meta.data.ogTitle}</b><br/>
+        <i>{link.meta.data.ogDescription}</i>
+      </a>
+    );
   }
 }
 

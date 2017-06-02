@@ -12,14 +12,14 @@
           "kind": "inline",
           "type": "link",
           "data": {
-            "href": "http://slatejs.org"
+            "href": "https://www.wp.pl/"
           },
           "nodes": [
             {
               "kind": "text",
               "ranges": [
                 {
-                  "text": "http://slatejs.org"
+                  "text": "https://www.wp.pl/"
                 }
               ]
             }

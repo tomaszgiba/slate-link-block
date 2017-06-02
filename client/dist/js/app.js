@@ -47237,9 +47237,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _mobxReact = __webpack_require__(204);
 
-var _LinkBlock = __webpack_require__(605);
+var _LinkBlockDecorator = __webpack_require__(608);
 
-var _LinkBlock2 = _interopRequireDefault(_LinkBlock);
+var _LinkBlockDecorator2 = _interopRequireDefault(_LinkBlockDecorator);
 
 var _LinkBlockStore = __webpack_require__(606);
 
@@ -47249,6 +47249,10 @@ var _state = __webpack_require__(607);
 
 var _state2 = _interopRequireDefault(_state);
 
+var _isUrlSuperb = __webpack_require__(610);
+
+var _isUrlSuperb2 = _interopRequireDefault(_isUrlSuperb);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -47257,10 +47261,41 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var linkExp = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/;
+function render(props) {
+  var text = props.node.text;
+  var href = text;
 
+  _LinkBlockStore2.default.discoverLink(href);
 
-var RULES = [];
+  return new _LinkBlockDecorator2.default(href, props, _LinkBlockStore2.default).decorate();
+}
+
+var schema = {
+  nodes: {
+    paragraph: function paragraph(props) {
+      return _react2.default.createElement(
+        'p',
+        null,
+        props.children
+      );
+    },
+    link: function link(props) {
+      var data = props.node.data;
+
+      var href = data.get('href');
+
+      _LinkBlockStore2.default.discoverLink(href);
+
+      return new _LinkBlockDecorator2.default(href, props, _LinkBlockStore2.default).decorate();
+    }
+  },
+  rules: [{
+    match: function match(object) {
+      return (0, _isUrlSuperb2.default)(object.text);
+    },
+    render: render
+  }]
+};
 
 var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
   _inherits(PlainText, _React$Component);
@@ -47269,8 +47304,6 @@ var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
     _classCallCheck(this, PlainText);
 
     var _this = _possibleConstructorReturn(this, (PlainText.__proto__ || Object.getPrototypeOf(PlainText)).call(this));
-
-    _this.serializer = new _slate.Html({ rules: RULES });
 
     _this.state = {
       state: _slate.Raw.deserialize(_state2.default, { terse: true })
@@ -47281,9 +47314,6 @@ var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
   }
 
   _createClass(PlainText, [{
-    key: 'onPaste',
-    value: function onPaste(e, data, state) {}
-  }, {
     key: 'onChange',
     value: function onChange(state) {
       this.setState({ state: state });
@@ -47291,18 +47321,14 @@ var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_LinkBlock2.default, { store: _LinkBlockStore2.default, url: 'www.github.com' }),
-        _react2.default.createElement(_LinkBlock2.default, { store: _LinkBlockStore2.default, url: 'www.wp.pl' }),
-        _react2.default.createElement(_LinkBlock2.default, { store: _LinkBlockStore2.default, url: 'www.youtube.com' }),
         _react2.default.createElement(_slate.Editor, {
+          schema: schema,
           placeholder: 'Enter some plain text...',
           state: this.state.state,
           onChange: this.onChange
-          // onPaste={this.onPaste}
         })
       );
     }
@@ -93726,13 +93752,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class;
-
 var _react = __webpack_require__(4);
 
 var _react2 = _interopRequireDefault(_react);
-
-var _mobxReact = __webpack_require__(204);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -93742,7 +93764,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var LinkBlock = (0, _mobxReact.observer)(_class = function (_Component) {
+var LinkBlock = function (_Component) {
   _inherits(LinkBlock, _Component);
 
   function LinkBlock() {
@@ -93752,41 +93774,31 @@ var LinkBlock = (0, _mobxReact.observer)(_class = function (_Component) {
   }
 
   _createClass(LinkBlock, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      this.props.store.discoverLink(this.props.url);
-    }
-  }, {
-    key: 'render',
+    key: "render",
     value: function render() {
-      var store = this.props.store;
-      var dl = store.getLink(this.props.url);
+      var link = this.props.link;
 
-      return dl.meta ? _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement('img', { src: dl.meta.data.ogImage.url, width: '50' }),
+      return _react2.default.createElement(
+        "a",
+        { href: this.props.href },
+        _react2.default.createElement("img", { src: link.meta.data.ogImage.url, width: "50" }),
         _react2.default.createElement(
-          'b',
+          "b",
           null,
-          dl.meta.data.ogTitle
+          link.meta.data.ogTitle
         ),
-        _react2.default.createElement('br', null),
+        _react2.default.createElement("br", null),
         _react2.default.createElement(
-          'i',
+          "i",
           null,
-          dl.meta.data.ogDescription
+          link.meta.data.ogDescription
         )
-      ) : _react2.default.createElement(
-        'a',
-        { href: this.props.url },
-        this.props.url
       );
     }
   }]);
 
   return LinkBlock;
-}(_react.Component)) || _class;
+}(_react.Component);
 
 exports.default = LinkBlock;
 
@@ -93910,6 +93922,8 @@ var SlateStore = (_class3 = function () {
   }, {
     key: 'discoverLink',
     value: function discoverLink(link) {
+      if (link === undefined) throw Error('Undefined link');
+      if (this.getLink(link)) return;
       this.links.push(new DiscoveredLink(link));
     }
   }]);
@@ -93945,14 +93959,14 @@ module.exports = {
 					"kind": "inline",
 					"type": "link",
 					"data": {
-						"href": "http://slatejs.org"
+						"href": "https://www.wp.pl/"
 					},
 					"nodes": [
 						{
 							"kind": "text",
 							"ranges": [
 								{
-									"text": "http://slatejs.org"
+									"text": "https://www.wp.pl/"
 								}
 							]
 						}
@@ -93962,6 +93976,147 @@ module.exports = {
 		}
 	]
 };
+
+/***/ }),
+/* 608 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _LinkBlock = __webpack_require__(605);
+
+var _LinkBlock2 = _interopRequireDefault(_LinkBlock);
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*
+ * We have to serialize React Component to be able to inject it into Slate's state
+ * */
+var LinkBlockDecorator = function () {
+  function LinkBlockDecorator(url, props, store) {
+    _classCallCheck(this, LinkBlockDecorator);
+
+    this.url = url;
+    this.store = store;
+    this.props = props;
+  }
+
+  _createClass(LinkBlockDecorator, [{
+    key: 'decorate',
+    value: function decorate() {
+      this.store.discoverLink(this.url);
+
+      var link = this.store.getLink(this.url);
+
+      if (link && link.meta) {
+        return _react2.default.createElement(
+          _LinkBlock2.default,
+          _extends({}, this.props.attributes, { href: this.url, link: link }),
+          this.props.children
+        );
+      } else {
+        return _react2.default.createElement(
+          'a',
+          _extends({}, this.props.attributes, { href: this.url }),
+          this.props.children
+        );
+      }
+    }
+  }]);
+
+  return LinkBlockDecorator;
+}();
+
+exports.default = LinkBlockDecorator;
+
+/***/ }),
+/* 609 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var v4 = '(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(?:\\.(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])){3}';
+var v6 = '(?:(?:[0-9a-fA-F:]){1,4}(?:(?::(?:[0-9a-fA-F]){1,4}|:)){2,7})+';
+
+var ip = module.exports = function (opts) {
+	opts = opts || {};
+	return opts.exact ? new RegExp('(?:^' + v4 + '$)|(?:^' + v6 + '$)') :
+	                    new RegExp('(?:' + v4 + ')|(?:' + v6 + ')', 'g');
+};
+
+ip.v4 = function (opts) {
+	opts = opts || {};
+	return opts.exact ? new RegExp('^' + v4 + '$') : new RegExp(v4, 'g');
+};
+
+ip.v6 = function (opts) {
+	opts = opts || {};
+	return opts.exact ? new RegExp('^' + v6 + '$') : new RegExp(v6, 'g');
+};
+
+
+/***/ }),
+/* 610 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var urlRegex = __webpack_require__(611)({exact: true});
+
+module.exports = function (url) {
+	if (typeof url !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	return urlRegex.test(url.trim());
+};
+
+
+/***/ }),
+/* 611 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var ipRegex = __webpack_require__(609);
+
+module.exports = function (opts) {
+	opts = opts || {};
+
+	var protocol = '(?:(?:[a-z]+:)?//)';
+	var auth = '(?:\\S+(?::\\S*)?@)?';
+	var ip = ipRegex.v4().source;
+	var host = '(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)';
+	var domain = '(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*';
+	var tld = '(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))';
+	var port = '(?::\\d{2,5})?';
+	var path = '(?:[/?#][^\\s"]*)?';
+	var regex = [
+		'(?:' + protocol + '|www\\.)' + auth, '(?:localhost|' + ip + '|' + host + domain + tld + ')',
+		port, path
+	].join('');
+
+	return opts.exact ? new RegExp('(?:^' + regex + '$)', 'i') :
+						new RegExp(regex, 'ig');
+};
+
 
 /***/ })
 /******/ ]);
