@@ -47261,15 +47261,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function render(props) {
-  var text = props.node.text;
-  var href = text;
-
-  _LinkBlockStore2.default.discoverLink(href);
-
-  return new _LinkBlockDecorator2.default(href, props, _LinkBlockStore2.default).decorate();
-}
-
 var schema = {
   nodes: {
     paragraph: function paragraph(props) {
@@ -47288,13 +47279,7 @@ var schema = {
 
       return new _LinkBlockDecorator2.default(href, props, _LinkBlockStore2.default).decorate();
     }
-  },
-  rules: [{
-    match: function match(object) {
-      return (0, _isUrlSuperb2.default)(object.text);
-    },
-    render: render
-  }]
+  }
 };
 
 var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
@@ -47310,6 +47295,7 @@ var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
     };
 
     _this.onChange = _this.onChange.bind(_this);
+    _this.onPaste = _this.onPaste.bind(_this);
     return _this;
   }
 
@@ -47317,6 +47303,23 @@ var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
     key: 'onChange',
     value: function onChange(state) {
       this.setState({ state: state });
+    }
+  }, {
+    key: 'onPaste',
+    value: function onPaste(e, data, state) {
+      if (!(0, _isUrlSuperb2.default)(data.text)) return;
+
+      return state.transform().insertBlock({
+        type: 'link',
+        data: { href: data.text },
+        nodes: [{
+          type: 'inline',
+          kind: 'text',
+          ranges: [{
+            text: data.text
+          }]
+        }]
+      }).apply();
     }
   }, {
     key: 'render',
@@ -47328,7 +47331,8 @@ var PlainText = (0, _mobxReact.observer)(_class = function (_React$Component) {
           schema: schema,
           placeholder: 'Enter some plain text...',
           state: this.state.state,
-          onChange: this.onChange
+          onChange: this.onChange,
+          onPaste: this.onPaste
         })
       );
     }

@@ -6,15 +6,6 @@ import store from '../stores/LinkBlockStore.jsx';
 import initialState from '../state.json';
 import isUrl from 'is-url-superb';
 
-function render(props) {
-  let text = props.node.text;
-  let href = text;
-
-  store.discoverLink(href);
-
-  return new LinkBlockDecorator(href, props, store).decorate();
-}
-
 const schema = {
   nodes: {
     paragraph: props => <p>{props.children}</p>,
@@ -26,11 +17,7 @@ const schema = {
 
       return new LinkBlockDecorator(href, props, store).decorate();
     },
-  },
-  rules: [{
-    match: (object) => { return isUrl(object.text); },
-    render
-  }]
+  }
 };
 
 @observer
@@ -44,10 +31,33 @@ export default class PlainText extends React.Component {
     };
 
     this.onChange = this.onChange.bind(this);
+    this.onPaste = this.onPaste.bind(this);
   }
 
   onChange(state) {
     this.setState({ state });
+  };
+
+  onPaste(e, data, state) {
+    if(!isUrl(data.text)) return;
+
+    return state
+        .transform()
+        .insertBlock({
+          type: 'link',
+          data: { href: data.text },
+          nodes: [
+            {
+              type: 'inline',
+              kind: 'text',
+              ranges: [
+                {
+                  text: data.text
+                }
+              ]
+            }
+          ]
+        }).apply();
   };
 
   render() {
@@ -58,6 +68,7 @@ export default class PlainText extends React.Component {
             placeholder={'Enter some plain text...'}
             state={this.state.state}
             onChange={this.onChange}
+            onPaste={this.onPaste}
         />
       </div>
     )
