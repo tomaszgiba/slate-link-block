@@ -9,7 +9,7 @@ import isUrl from 'is-url-superb';
 const schema = {
   nodes: {
     paragraph: props => <p>{props.children}</p>,
-    link: (props) => {
+    link: props => {
       const { data } = props.node;
       const href = data.get('href');
 
@@ -29,16 +29,13 @@ export default class PlainText extends React.Component {
     this.state = {
       state: Raw.deserialize(initialState, { terse: true })
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.onPaste = this.onPaste.bind(this);
   }
 
-  onChange(state) {
+  onChange = (state) => {
     this.setState({ state });
   };
 
-  onPaste(e, data, state) {
+  onPaste = (e, data, state) => {
     if(!isUrl(data.text)) return;
 
     return state
@@ -60,7 +57,7 @@ export default class PlainText extends React.Component {
         }).apply();
   };
 
-  render() {
+  render = () => {
     return (
       <div>
         <Editor

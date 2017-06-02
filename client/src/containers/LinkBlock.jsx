@@ -7,9 +7,10 @@ class LinkBlock extends Component {
 
     return (
       <a href={this.props.href}>
-        <img src={link.meta.data.ogImage.url} width="50" />
+        <img src={link.meta.data.ogImage.url} width="30" />
         <b>{link.meta.data.ogTitle}</b><br/>
-        <i>{link.meta.data.ogDescription}</i>
+        {/*<i>{link.meta.data.ogDescription}</i>*/}
+        {/*<a href={this.props.href}></a>*/}
       </a>
     );
   }
